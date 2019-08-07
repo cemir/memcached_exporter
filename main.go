@@ -22,7 +22,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/grobie/gomemcache/memcache"
+	"github.com/cemir/gomemcache/memcache"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/log"
@@ -680,6 +680,7 @@ func main() {
 		address       = kingpin.Flag("memcached.address", "Memcached server address.").Default("localhost:11211").String()
 		timeout       = kingpin.Flag("memcached.timeout", "memcached connect timeout.").Default("1s").Duration()
 		pidFile       = kingpin.Flag("memcached.pid-file", "Optional path to a file containing the memcached PID for additional metrics.").Default("").String()
+		unixSocket    = kingpin.Flag("memcached.unix-socket", "Optional path to the unix socket file.").Default("").String()
 		listenAddress = kingpin.Flag("web.listen-address", "Address to listen on for web interface and telemetry.").Default(":9150").String()
 		metricsPath   = kingpin.Flag("web.telemetry-path", "Path under which to expose metrics.").Default("/metrics").String()
 	)
@@ -690,6 +691,10 @@ func main() {
 
 	log.Infoln("Starting memcached_exporter", version.Info())
 	log.Infoln("Build context", version.BuildContext())
+
+	if *unixSocket != "" {
+		fmt.Printf("socket set\n")
+	}
 
 	prometheus.MustRegister(NewExporter(*address, *timeout))
 	if *pidFile != "" {
